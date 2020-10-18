@@ -2,6 +2,7 @@ import React from 'react';
 import getMergeSortAnimations from './Algorithms/MergeSortAlgo';
 import getBubbleSortAnimations from './Algorithms/BubbleSortAlgo';
 import getQuickSortAnimations from './Algorithms/QuickSortAlgo';
+import getHeapSortAnimations from './Algorithms/HeapSortAlgo';
 import './SortingVisualiser.css';
 
 const PRIMARY_COLOUR = 'turquoise';
@@ -17,7 +18,7 @@ class SortingVisualiser extends React.Component {
             timeoutIDs: [],
             sortStarted: false,
             upperBound: 600,
-            animationSpeed: 100,
+            animationSpeed: 90,
             numberOfElements: 100,
         }
         this.resetArray = this.resetArray.bind(this);
@@ -48,6 +49,9 @@ class SortingVisualiser extends React.Component {
         for (let i = 0; i < this.state.numberOfElements; i++) {
             array.push(randomIntFromInterval(5, this.state.upperBound)); //Bar of 5 or below is too small for the screen!
         }
+        const arrayBars = document.getElementsByClassName('array-bar');
+        for (let item of arrayBars)
+            item.style.backgroundColor = PRIMARY_COLOUR;
         this.setState({array});
         this.state.sortStarted = false;
     }
@@ -124,12 +128,10 @@ class SortingVisualiser extends React.Component {
         this.state.sortStarted = true;
         const animations = getQuickSortAnimations(this.state.array);
         let id;
-        console.log(animations);
-        let flagred = 0, flaggreen = 0, flagred2 = 0;
+        let flagred = 0, flaggreen = 0;
         for (let i = 0; i < animations.length; ++i) {
             const arrayBars = document.getElementsByClassName('array-bar');
             const [eleOne, eleTwo] = animations[i];
-            //const colour = i % 2 === 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
             if (animations[i].length === 2) {
                 flagred++;
                 const colour = flagred % 2 !== 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
@@ -145,14 +147,6 @@ class SortingVisualiser extends React.Component {
                     arrayBars[eleOne].style.backgroundColor = colour;
                 }, i * this.state.animationSpeed);
             }
-            else if (animations[i].length === 4) {
-                flagred2++;
-                const colour = flagred2 % 2 !== 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
-                id = setTimeout(() => {
-                    arrayBars[eleOne].style.backgroundColor = colour;
-                    
-                }, i * this.state.animationSpeed);
-            } 
             else {
                 id = setTimeout(() => {
                     arrayBars[eleOne].style.height = `${eleTwo}px`
@@ -166,7 +160,39 @@ class SortingVisualiser extends React.Component {
         this.state.timeoutIDs.push(id);
     }
     heapSort() {
-
+        this.toggleSliders("off");
+        this.updateStatus("Heap Sorting...");
+        this.state.sortStarted = true;
+        const animations = getHeapSortAnimations(this.state.array);
+        console.log(animations);
+        let id;
+        for (let i = 0; i < animations.length; ++i) {
+            const arrayBars = document.getElementsByClassName('array-bar');
+            const [eleOne, eleTwo] = animations[i];
+            if (animations[i].length === 3) {
+                const colour = i % 2 === 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.backgroundColor = colour;
+                    arrayBars[eleTwo].style.backgroundColor = colour;
+                }, i * this.state.animationSpeed);
+            }
+            else if (animations[i].length === 4) {
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.height = `${eleTwo}px`;
+                    arrayBars[eleOne].style.backgroundColor = "purple";
+                }, i * this.state.animationSpeed);
+            }
+            else {
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.height = `${eleTwo}px`;
+                }, i * this.state.animationSpeed);
+            }
+            this.state.timeoutIDs.push(id);
+        }
+        id = setTimeout(() => {
+            this.updateStatus("Heap Sort Complete!");
+        }, this.state.animationSpeed * animations.length);
+        this.state.timeoutIDs.push(id);
     }
     testSortingAlgorithms() {
         for (let i = 0; i < 100; i++) {
@@ -176,8 +202,8 @@ class SortingVisualiser extends React.Component {
             array.push(randomIntFromInterval(-1000, 1000));
           }
           const javaScriptSortedArray = array.slice().sort((a, b) => a - b);
-          const QuickSortedArray = getQuickSortAnimations(array.slice());
-          console.log(arraysAreEqual(javaScriptSortedArray, QuickSortedArray));
+          const HeapSortedArray = getHeapSortAnimations(array.slice());
+          console.log(arraysAreEqual(javaScriptSortedArray, HeapSortedArray));
         }
     }
     render() {
@@ -205,9 +231,9 @@ class SortingVisualiser extends React.Component {
                     <input type="range" 
                         min="1" 
                         max="100"
-                        defaultValue="95"  
+                        defaultValue={this.state.animationSpeed}  
                         className="slider"
-                        step="1" //20 - e.target.value since this is just how the direction of range sliders works
+                        step="1" //20 - e.target.value since this is just how the direction of range sliders work
                         onChange={(e) => {this.state.animationSpeed = (101 - e.target.value) * 2;
                                     this.updateStatus(`Speed: ${e.target.value}`)}} />
                     Elements:

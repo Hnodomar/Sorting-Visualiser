@@ -20,12 +20,11 @@ function quickSort(array, left, right, animations) {
 }
 
 function partition(array, left, right, animations) {
+    var executed = false;
     var pivot   = array[Math.floor((right + left) / 2)], //middle element
         i       = left, //left pointer
         j       = right; //right pointer
     animations.push([Math.floor((right + left) / 2)]);
-    animations.push([i, j]);
-    animations.push([i, j]);
     while (i <= j) {
         while (array[i] < pivot) { //Skip elements from left smaller than pivot
             animations.push([i, j]);
