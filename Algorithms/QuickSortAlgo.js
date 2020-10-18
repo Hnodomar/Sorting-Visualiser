@@ -1,77 +1,47 @@
 function getQuickSortAnimations(array) {
     const animations = [];
-    //if (array.length <= 1) return array;
-    quicksort(array, 0, array.length - 1, animations);
-    return array;
-}
-function quicksort(array, left, right) {
-    left = left || 0;
-    right = right || array.length - 1;
-
-    var pivot = partitionHoare(array, left, right);
-
-    if (left < pivot - 1) {
-        quicksort(array, left, pivot - 1);
-    }
-
-    if (right > pivot) {
-        quicksort(array, pivot, right)
-    }
-
-    return array;
-
-}
-
-function partitionHoare(array, left, right) {
-    var pivot = array[Math.floor((left + right) / 2)];
-
-    while (left < right) {
-        while (array[left] < array[pivot]) {
-            left++
-        }
-        while (array[right] > array[pivot]) {
-            right--
-        }
-
-        if (left <= right) {
-            swap(array, left, right);
-            left++
-            right--
-        }
-    }
-    return left;
-}
-/*function quickSort(array, startIndex, endIndex, animations) {
-    var pivot = partition(array, startIndex, endIndex);
-    if (startIndex < pivot - 1)
-        quickSort(array, startIndex, pivot - 1);
-    if (endIndex > pivot)
-        quickSort(array, pivot, endIndex);
+    if (array.length <= 1) return array;
+    quickSort(array, 0, array.length - 1);
     return array;
 }
 
-function partition(array, startIndex, endIndex) {
-    const pivot = Math.floor((startIndex + endIndex) / 2);
-    while (startIndex < endIndex) {
-        while (array[startIndex] < array[pivot]) {
-            startIndex++;
+
+function swap(items, leftIndex, rightIndex){
+    var temp = items[leftIndex];
+    items[leftIndex] = items[rightIndex];
+    items[rightIndex] = temp;
+}
+function partition(items, left, right) {
+    var pivot = items[Math.floor((right + left) / 2)], //middle element
+        i = left, //left pointer
+        j = right; //right pointer
+    while (i <= j) {
+        while (items[i] < pivot) {
+            i++;
         }
-        while (array[endIndex] > array[pivot]) {
-            endIndex--;
+        while (items[j] > pivot) {
+            j--;
         }
-        if (startIndex <= endIndex) {
-            swap(array, startIndex, endIndex);
-            startIndex++;
-            endIndex--;
+        if (i <= j) {
+            swap(items, i, j); 
+            i++;
+            j--;
         }
     }
-    return startIndex;
-}*/
-
-function swap(array, i, j) {
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+    return i;
 }
 
+function quickSort(items, left, right) {
+    var index;
+    if (items.length > 1) {
+        index = partition(items, left, right); //index returned from partition
+        if (left < index - 1) { //more elements on the left side of the pivot
+            quickSort(items, left, index - 1);
+        }
+        if (index < right) { //more elements on the right side of the pivot
+            quickSort(items, index, right);
+        }
+    }
+    return items;
+}
 export default getQuickSortAnimations;
