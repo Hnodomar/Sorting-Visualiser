@@ -6,6 +6,7 @@ import './SortingVisualiser.css';
 
 const PRIMARY_COLOUR = 'turquoise';
 const SECONDARY_COLOUR = 'red';
+const PIVOT_COLOUR = 'green';
 
 
 class SortingVisualiser extends React.Component {
@@ -16,7 +17,7 @@ class SortingVisualiser extends React.Component {
             timeoutIDs: [],
             sortStarted: false,
             upperBound: 600,
-            animationSpeed: 5,
+            animationSpeed: 100,
             numberOfElements: 100,
         }
         this.resetArray = this.resetArray.bind(this);
@@ -38,8 +39,8 @@ class SortingVisualiser extends React.Component {
         this.state.timeoutIDs = [];
     }
     resetArray() {
-        const test = document.getElementsByClassName('VisualiserBars')[0].offsetWidth;
-        console.log(test);
+        //const test = document.getElementsByClassName('VisualiserBars')[0].offsetWidth;
+        //console.log(test);
         this.updateStatus("");
         this.stopVisualiser();
         this.toggleSliders("on");
@@ -118,7 +119,51 @@ class SortingVisualiser extends React.Component {
         this.state.timeoutIDs.push(id);
     }
     quickSort() {
-        
+        this.toggleSliders("off");
+        this.updateStatus("Quick Sorting...");
+        this.state.sortStarted = true;
+        const animations = getQuickSortAnimations(this.state.array);
+        let id;
+        console.log(animations);
+        let flagred = 0, flaggreen = 0, flagred2 = 0;
+        for (let i = 0; i < animations.length; ++i) {
+            const arrayBars = document.getElementsByClassName('array-bar');
+            const [eleOne, eleTwo] = animations[i];
+            //const colour = i % 2 === 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
+            if (animations[i].length === 2) {
+                flagred++;
+                const colour = flagred % 2 !== 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.backgroundColor = colour;
+                    arrayBars[eleTwo].style.backgroundColor = colour;
+                }, i * this.state.animationSpeed);
+            }
+            else if (animations[i].length === 1) {
+                flaggreen++;
+                const colour = flaggreen % 2 !== 0 ? "green" : PRIMARY_COLOUR;
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.backgroundColor = colour;
+                }, i * this.state.animationSpeed);
+            }
+            else if (animations[i].length === 4) {
+                flagred2++;
+                const colour = flagred2 % 2 !== 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.backgroundColor = colour;
+                    
+                }, i * this.state.animationSpeed);
+            } 
+            else {
+                id = setTimeout(() => {
+                    arrayBars[eleOne].style.height = `${eleTwo}px`
+                }, i * this.state.animationSpeed);
+            }
+            this.state.timeoutIDs.push(id);
+        }
+        id = setTimeout(() => {
+            this.updateStatus("Quick Sort Complete!");
+        }, this.state.animationSpeed * animations.length);
+        this.state.timeoutIDs.push(id);
     }
     heapSort() {
 
@@ -160,7 +205,7 @@ class SortingVisualiser extends React.Component {
                     <input type="range" 
                         min="1" 
                         max="100"
-                        defaultValue="5"  
+                        defaultValue="95"  
                         className="slider"
                         step="1" //20 - e.target.value since this is just how the direction of range sliders works
                         onChange={(e) => {this.state.animationSpeed = (101 - e.target.value) * 2;
