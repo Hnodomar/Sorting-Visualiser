@@ -57,19 +57,30 @@ class SortingVisualiser extends React.Component {
     }
     toggleSliders(toggle) {
         const sliders = document.getElementsByClassName("slider");
-        if (toggle === "off") 
-            for (let item of sliders)
+        const buttons = document.getElementsByClassName("VisualiserButton");
+        if (toggle === "off") {
+            for (let item of sliders) {
                 item.disabled = true;
-        else if (toggle === "on")
-            for (let item of sliders)
+                item.style.opacity = 0.5;
+            }
+            for (let item of buttons)
+                item.style.opacity = 0.5;
+        }
+        else if (toggle === "on") {
+            for (let item of sliders) {
                 item.disabled = false;
+                item.style.opacity = 1.0;
+            }
+            for (let item of buttons)
+                item.style.opacity = 1.0;
+        }
     }
     updateStatus(statusUpdate) {
         document.getElementsByClassName('StatusWindowText')[0].innerHTML = `${statusUpdate}`;
     }
     mergeSort() {
-        this.toggleSliders("off");
         this.updateStatus("Merge Sorting...");
+        this.toggleSliders("off");
         this.state.sortStarted = true;
         const animations = getMergeSortAnimations(this.state.array);
         let id;
@@ -210,9 +221,6 @@ class SortingVisualiser extends React.Component {
         const array = this.state.array;
         return (
             <div className="arrayContainer">
-                <div className="VisualiserHeader">
-                    <p>Sorting Visualiser</p>
-                </div>
                 <div className="VisualiserBars">
                     {array.map((value, index) => {
                         return (<div 
@@ -226,8 +234,11 @@ class SortingVisualiser extends React.Component {
                     <div className="StatusWindow">
                         <p className="StatusWindowText"></p>
                     </div>
-                    <button type="button" onClick={() => this.resetArray(this.state.upperBound)}>Reset Array</button>
-                    Speed:
+                    <button type="button" className="ResetButton" onClick={() => this.resetArray(this.state.upperBound)}>Reset</button>
+                    <div className="range-header">
+                        <span className="range-title">Speed</span>
+                        <span id="speed-value">90</span>
+                    </div>
                     <input type="range" 
                         min="1" 
                         max="100"
@@ -235,31 +246,37 @@ class SortingVisualiser extends React.Component {
                         className="slider"
                         step="1" //20 - e.target.value since this is just how the direction of range sliders work
                         onChange={(e) => {this.state.animationSpeed = (101 - e.target.value) * 2;
-                                    this.updateStatus(`Speed: ${e.target.value}`)}} />
-                    Elements:
+                                    document.getElementById('speed-value').innerHTML = `${e.target.value}`;}} />
+                    <div className="range-header">
+                        <span className="range-title">Elements</span>
+                        <span id="elements-value">100</span>
+                    </div>
                     <input type="range" 
                         min="10" 
                         max="150"
                         defaultValue="100"  
                         className="slider"
                         onChange={(e) => {this.state.numberOfElements = e.target.value;
-                            this.resetArray()
-                            this.updateStatus(`Elements: ${e.target.value}`)}} />
-                    Upper Bound:
+                            this.resetArray();
+                            document.getElementById('elements-value').innerHTML = `${e.target.value}`}} />
+                     <div className="range-header">
+                        <span className="range-titleB">Upper Bound</span>
+                        <span id="bound-value">600</span>
+                    </div>
                     <input type="range" 
                         min="50" 
                         max="650"
                         defaultValue="600"  
                         className="slider" 
                         onChange={(e) => {this.state.upperBound = e.target.value;
-                            this.resetArray()
-                            this.updateStatus(`Upper Bound: ${e.target.value}`)}} />
-                    <button type="button" onClick={() => this.state.sortStarted === false ? this.mergeSort() : this.updateStatus("Please reset the array!")}>Merge Sort</button>
-                    <button type="button" onClick={() => this.state.sortStarted === false ? this.bubbleSort() : this.updateStatus("Please reset the array!")}>Bubble Sort</button>
-                    <button type="button" onClick={() => this.state.sortStarted === false ? this.quickSort() : this.updateStatus("Please reset the array!")}>Quick Sort</button>
-                    <button type="button" onClick={() => this.state.sortStarted === false ? this.heapSort() : this.updateStatus("Please reset the array!")}>Heap Sort</button>
-                    <button type="button" onClick={() => this.stopVisualiser()}>STOP</button>
-                    <button type="button" onClick={() => this.testSortingAlgorithms()}>Test</button>
+                            this.resetArray();
+                            document.getElementById('bound-value').innerHTML = `${e.target.value}`}} />
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.mergeSort() : this.updateStatus("Please reset the array!")}>Merge Sort</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.bubbleSort() : this.updateStatus("Please reset the array!")}>Bubble Sort</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.quickSort() : this.updateStatus("Please reset the array!")}>Quick Sort</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.heapSort() : this.updateStatus("Please reset the array!")}>Heap Sort</button>
+                    {/*<button type="button" className="VisualiserButton" onClick={() => this.stopVisualiser()}>STOP</button>*/}
+                    {/*<button type="button" className="VisualiserButton" onClick={() => this.testSortingAlgorithms()}>Test</button>*/}
                 </div>
             </div>
         );
