@@ -1,15 +1,16 @@
 .arrayContainer {
-	margin-left: 25%;
-	margin-top: 10%;
+	margin: auto;
 	width: 55%;
-	position: absolute;
+	position: relative;
+	display: inline-block;
 	height: 700px;
 	min-width: 870px;
-	box-shadow: 2px 2px 2px #000000, 0px 0px 2px #0d0d0d;
+	box-shadow: 2px 2px 7px #000000;
 	border: 1px solid black;
 	border-radius: 20px;
 	overflow: hidden;
 	z-index: 1;
+	background-color: #f8f8ff;
 }
 /* BARS */
 .array-bar {
@@ -19,10 +20,10 @@
 }
 
 .VisualiserBars {
-	width: 80%;
+	width: 84%;
 	position: absolute;
 	bottom: -5px;
-	left: 175px;
+	left: 173px;
 }
 /* END BARS */
 /* HEADER */
@@ -75,6 +76,11 @@
 }
 
 .VisualiserButton:active {
+	filter: brightness(55%);
+}
+
+
+.VisualiserButton:active {
 	color: grey;
 	transform: scale(1.05); 
 }
@@ -98,6 +104,10 @@
 	cursor: pointer;
 }
 
+.ResetButton:active {
+	filter: brightness(55%);
+}
+
 .ResetButton:hover {
 	transform: scale(1.05);
 }
@@ -117,7 +127,7 @@
 	position: absolute;
 	font-size: 25px;
 	margin: auto;
-	top: 4%;
+	top: 18%;
 	font-weight: bold;
 }
 
@@ -256,4 +266,17 @@ input[type=range]:focus::-ms-fill-upper {
 
 .slider {
 	background: inherit;
+}
+
+@media only screen and (max-width: 1500px) {
+	.VisualiserBars {
+		width: 80%;
+	}
+	.arrayContainer {
+		right: 100px;
+	}
+}
+
+@media only screen and (max-width: 1400px) {
+
 }

@@ -7,7 +7,6 @@ import './SortingVisualiser.css';
 
 const PRIMARY_COLOUR = 'turquoise';
 const SECONDARY_COLOUR = 'red';
-const PIVOT_COLOUR = 'green';
 
 
 class SortingVisualiser extends React.Component {
@@ -31,6 +30,7 @@ class SortingVisualiser extends React.Component {
         window.addEventListener('resize', this.resetArray);
     }
     componentWillUnmount() {
+        window.removeEventListener('resize', this.resetArray);
         this.stopVisualiser();
     }
     stopVisualiser() {
@@ -40,8 +40,6 @@ class SortingVisualiser extends React.Component {
         this.state.timeoutIDs = [];
     }
     resetArray() {
-        //const test = document.getElementsByClassName('VisualiserBars')[0].offsetWidth;
-        //console.log(test);
         this.updateStatus("");
         this.stopVisualiser();
         this.toggleSliders("on");
@@ -83,10 +81,10 @@ class SortingVisualiser extends React.Component {
         this.toggleSliders("off");
         this.state.sortStarted = true;
         const animations = getMergeSortAnimations(this.state.array);
+        const arrayBars = document.getElementsByClassName('array-bar');
         let id;
         for (let i = 0; i < animations.length; ++i) {
             const [eleOne, eleTwo] = animations[i]; //Get pair from each index of animations array
-            const arrayBars = document.getElementsByClassName('array-bar');
             if (i % 3 !== 2) { //Every 3rd element is a swap animation
                 const colour = i % 3 === 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
                 id = setTimeout(() => {
@@ -102,6 +100,8 @@ class SortingVisualiser extends React.Component {
         }
         id = setTimeout(() => {
             this.updateStatus("Merge Sort Complete!");
+            for (let item of arrayBars)
+            item.style.backgroundColor = "#DA70D6";
         }, this.state.animationSpeed * animations.length);
         this.state.timeoutIDs.push(id);
     }
@@ -111,26 +111,28 @@ class SortingVisualiser extends React.Component {
         this.state.sortStarted = true;
         const animations = getBubbleSortAnimations(this.state.array);
         let id;
+        const arrayBars = document.getElementsByClassName('array-bar');
         for (let i = 0; i < animations.length; ++i) { //Loop the whole animations array
-            const arrayBars = document.getElementsByClassName('array-bar');
             const [eleOne, eleTwo] = animations[i]; //Get pair from each index of animations array
             if (eleOne === eleTwo - 1) { //If pair are indices
                 const colour = i % 2 === 0 ? SECONDARY_COLOUR : PRIMARY_COLOUR;
                 id = setTimeout(() => { //Colour change & revert animations ALWAYS adjacent in array, so % 2 to distinguish 
                     arrayBars[eleOne].style.backgroundColor = colour; //'select' values being compared by changing them red
                     arrayBars[eleTwo].style.backgroundColor = colour; //'unselect' values not being compared by changing them turquoise
-                }, (i / 10) * this.state.animationSpeed);
+                }, i  * this.state.animationSpeed);
             }
             else {  //If pair is an index plus numeric value
                 id = setTimeout(() => { //Change height of bar according to numeric value at index
                     arrayBars[eleOne].style.height = `${eleTwo}px`;
-                }, Math.floor((i / 10)) * this.state.animationSpeed);
+                }, i * this.state.animationSpeed);
             }
             this.state.timeoutIDs.push(id);
         }
         id = setTimeout(() => { //This will trigger at the same time the final animation does
             this.updateStatus("Bubble Sort Complete!");
-        }, this.state.animationSpeed * (animations.length / 10));
+            for (let item of arrayBars)
+            item.style.backgroundColor = "#DA70D6";
+        }, this.state.animationSpeed * animations.length);
         this.state.timeoutIDs.push(id);
     }
     quickSort() {
@@ -138,10 +140,10 @@ class SortingVisualiser extends React.Component {
         this.updateStatus("Quick Sorting...");
         this.state.sortStarted = true;
         const animations = getQuickSortAnimations(this.state.array);
+        const arrayBars = document.getElementsByClassName('array-bar');
         let id;
         let flagred = 0, flaggreen = 0;
         for (let i = 0; i < animations.length; ++i) {
-            const arrayBars = document.getElementsByClassName('array-bar');
             const [eleOne, eleTwo] = animations[i];
             if (animations[i].length === 2) {
                 flagred++;
@@ -167,6 +169,8 @@ class SortingVisualiser extends React.Component {
         }
         id = setTimeout(() => {
             this.updateStatus("Quick Sort Complete!");
+            for (let item of arrayBars)
+                item.style.backgroundColor = "#DA70D6";
         }, this.state.animationSpeed * animations.length);
         this.state.timeoutIDs.push(id);
     }
@@ -175,7 +179,6 @@ class SortingVisualiser extends React.Component {
         this.updateStatus("Heap Sorting...");
         this.state.sortStarted = true;
         const animations = getHeapSortAnimations(this.state.array);
-        console.log(animations);
         let id;
         for (let i = 0; i < animations.length; ++i) {
             const arrayBars = document.getElementsByClassName('array-bar');
@@ -190,7 +193,7 @@ class SortingVisualiser extends React.Component {
             else if (animations[i].length === 4) {
                 id = setTimeout(() => {
                     arrayBars[eleOne].style.height = `${eleTwo}px`;
-                    arrayBars[eleOne].style.backgroundColor = "purple";
+                    arrayBars[eleOne].style.backgroundColor = "#DA70D6";
                 }, i * this.state.animationSpeed);
             }
             else {
@@ -234,7 +237,7 @@ class SortingVisualiser extends React.Component {
                     <div className="StatusWindow">
                         <p className="StatusWindowText"></p>
                     </div>
-                    <button type="button" className="ResetButton" onClick={() => this.resetArray(this.state.upperBound)}>Reset</button>
+                   
                     <div className="range-header">
                         <span className="range-title">Speed</span>
                         <span id="speed-value">90</span>
@@ -260,7 +263,7 @@ class SortingVisualiser extends React.Component {
                             this.resetArray();
                             document.getElementById('elements-value').innerHTML = `${e.target.value}`}} />
                      <div className="range-header">
-                        <span className="range-titleB">Upper Bound</span>
+                        <span className="range-title">Range</span>
                         <span id="bound-value">600</span>
                     </div>
                     <input type="range" 
@@ -271,10 +274,12 @@ class SortingVisualiser extends React.Component {
                         onChange={(e) => {this.state.upperBound = e.target.value;
                             this.resetArray();
                             document.getElementById('bound-value').innerHTML = `${e.target.value}`}} />
-                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.mergeSort() : this.updateStatus("Please reset the array!")}>Merge Sort</button>
-                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.bubbleSort() : this.updateStatus("Please reset the array!")}>Bubble Sort</button>
-                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.quickSort() : this.updateStatus("Please reset the array!")}>Quick Sort</button>
-                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.heapSort() : this.updateStatus("Please reset the array!")}>Heap Sort</button>
+                    <button type="button" className="ResetButton" onClick={() => this.resetArray(this.state.upperBound)}>Reset</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.mergeSort() : this.updateStatus("Please reset!")}>Merge Sort</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.bubbleSort() : this.updateStatus("Please reset!")}>Bubble Sort</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.quickSort() : this.updateStatus("Please reset!")}>Quick Sort</button>
+                    <button type="button" className="VisualiserButton" onClick={() => this.state.sortStarted === false ? this.heapSort() : this.updateStatus("Please reset!")}>Heap Sort</button>
+                    
                     {/*<button type="button" className="VisualiserButton" onClick={() => this.stopVisualiser()}>STOP</button>*/}
                     {/*<button type="button" className="VisualiserButton" onClick={() => this.testSortingAlgorithms()}>Test</button>*/}
                 </div>

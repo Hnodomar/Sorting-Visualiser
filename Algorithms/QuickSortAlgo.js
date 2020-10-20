@@ -20,7 +20,6 @@ function quickSort(array, left, right, animations) {
 }
 
 function partition(array, left, right, animations) {
-    var executed = false;
     var pivot   = array[Math.floor((right + left) / 2)], //middle element
         i       = left, //left pointer
         j       = right; //right pointer
@@ -43,8 +42,19 @@ function partition(array, left, right, animations) {
             i++;
             j--;
         }
+        
+        
     } //When element from left LARGER than pivot has greater index than element from right SMALLER than pivot, quit
     animations.push([Math.floor((right + left) / 2)]);
+    /*if (left === right - 1) 
+        animations.push([left, right, i, left]);
+    else if (left === right - 2)
+        animations.push([left, right, left + 1, left + 2]);
+    else if (left === right - 3) 
+        animations.push([left, right, left + 1, left + 2]);
+    else if (left === right) 
+        animations.push([left, right, left, right]);*/
+
     return i; //and return the index of the left-most element... as this is our pivot index!
 }
 
